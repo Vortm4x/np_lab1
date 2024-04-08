@@ -5,22 +5,24 @@ BOARD_SIZE  = 100
 WIN_COUNT   = 5
 
 
-board = [ 
-    [
-        TILE_EMPTY
-        for _ in range(0, BOARD_SIZE)
-    ] 
-    for _ in range(0, BOARD_SIZE) 
-]
 
+def board_create():
+    board = [ 
+        [
+            TILE_EMPTY
+            for _ in range(0, BOARD_SIZE)
+        ] 
+        for _ in range(0, BOARD_SIZE) 
+    ]
+    return board
 
-def board_reset():
+def board_reset(board):
     for y in range (0, BOARD_SIZE):
         for x in range (0, BOARD_SIZE):
             board[y][x] = TILE_EMPTY
 
 
-def board_check_hor():
+def board_check_hor(board):
     winner_tile = TILE_EMPTY
     tiles_in_row = 0
 
@@ -51,7 +53,7 @@ def board_check_hor():
         tiles_in_row = 0
 
 
-def board_check_vert():
+def board_check_vert(board):
     winner_tile = TILE_EMPTY
     tiles_in_row = 0
 
@@ -81,16 +83,21 @@ def board_check_vert():
         winner_tile = TILE_EMPTY
         tiles_in_row = 0
 
+    return TILE_EMPTY
 
-def board_check():
-    tile = board_check_hor()
+
+def board_check(board):
+    tile = board_check_hor(board)
 
     if tile == TILE_X or tile == TILE_O:
         return tile
     
-    tile = board_check_vert()
+    tile = board_check_vert(board)
 
     if tile == TILE_X or tile == TILE_O:
         return tile
     
     return TILE_EMPTY
+
+def board_set(board, x, y, val):
+    board[y - 1][x - 1] = val

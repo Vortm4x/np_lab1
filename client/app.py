@@ -7,14 +7,15 @@ def main():
 
     with socket.socket(
         socket.AF_INET, 
-        socket.SOCK_STREAM | socket.SOCK_NONBLOCK
+        socket.SOCK_STREAM
     ) as client_socket:
         
         client_socket.connect((HOST, PORT))
-        print(f"Connected to server at {HOST}:{PORT}")
 
         request_data = requester.prepare()
         client_socket.sendall(request_data)
+
+        client_socket.setblocking(False)
 
         readable, writable, exceptional = select.select([client_socket], [], [client_socket])
 

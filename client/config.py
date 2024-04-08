@@ -1,2 +1,2 @@
-HOST='127.0.0.1'
-PORT=3434
+HOST='tcp://5.tcp.eu.ngrok.io'
+PORT=15939

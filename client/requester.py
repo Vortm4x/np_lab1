@@ -66,4 +66,4 @@ def handle(response_data : bytes) -> None:
     if result == TILE_X or result == TILE_O:
         print(f"{result} WON!\n")
     elif result == TILE_EMPTY:
-        print(f"Gsme is not over")
+        print(f"Game is not over")
