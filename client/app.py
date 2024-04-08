@@ -1,42 +1,42 @@
-import requests
-from config import HOST, REVERSE_SORT
-import json
-
-def reverse_sort(words : list[str]):
-    request_data =  json.dumps({
-        'words' : words
-    })
-
-    response = requests.post(
-        url=f"{HOST}{REVERSE_SORT}",
-        json=request_data
-    )
-    
-    response_data = response.json()
-    
-    if response.status_code == 200:
-        return response_data.get('words')
-    else:
-        error = response_data.get('error')
-        raise Exception(error)
-
+from config import HOST, PORT
+import socket
+import requester
+import select
 
 def main():
 
-    while True:
-        raw_input = input('Unsorted words: ')
+    with socket.socket(
+        socket.AF_INET, 
+        socket.SOCK_STREAM | socket.SOCK_NONBLOCK
+    ) as client_socket:
+        
+        client_socket.connect((HOST, PORT))
+        print(f"Connected to server at {HOST}:{PORT}")
 
-        words = raw_input.split(' ')
+        request_data = requester.prepare()
+        client_socket.sendall(request_data)
 
-        try:
-            sorted_words = reverse_sort(words)
-            print('Reverse-sorted words: ', ' '.join(sorted_words))
+        readable, writable, exceptional = select.select([client_socket], [], [client_socket])
 
-        except Exception as e:
-            print(e)
+        for sock in readable:
+            if sock is client_socket:
 
-        print()
+                response_data = sock.recv(1024)
+
+                if response_data:
+                    print("Received data:", response_data.decode())
+                    requester.handle(response_data.decode())
+                else:
+                    sock.close()
+        
+        for sock in exceptional:
+            if sock is client_socket:
+                sock.close()
 
 
 if __name__ == '__main__':
-    main()
+    while True:
+        try:
+            main()
+        except Exception as e:
+            print(f"Error occurred: {e}")
